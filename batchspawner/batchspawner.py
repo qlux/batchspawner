@@ -17,10 +17,17 @@ Common attributes of batch submission / resource manager environments will inclu
 """
 import pwd
 import os
+import sys
 
 import xml.etree.ElementTree as ET
 
 from jinja2 import Template
+
+# For the progress method of JupyterHub 0.9, requiring Python 3.5+.
+# If not supported, don't support it which is OK.
+if sys.version_info >= (3, 5):
+    import asyncio
+    from async_generator import async_generator, yield_, yield_from_
 
 from tornado import gen
 from tornado.process import Subprocess
@@ -393,6 +400,27 @@ class BatchSpawnerBase(Spawner):
             self.log.warn("Notebook server job {0} at {1}:{2} possibly failed to terminate".format(
                              self.job_id, self.current_ip, self.port)
                 )
+
+    # The progress method is only supported on JupyterHub 0.9, which
+    # only supports Python 3.5+.  It requires asyncio coroutines.
+    if sys.version_info >= (3, 5):
+        @async_generator
+        async def progress(self):
+            while True:
+                if self.state_ispending():
+                    await yield_({
+                        "message": "Pending in queue...",
+                    })
+                elif self.state_isrunning():
+                    await yield_({
+                        "message": "Cluster job running... waiting to connect",
+                    })
+                    return
+                else:
+                    await yield_({
+                        "message": "Unknown status...",
+                    })
+                await gen.sleep(.1)
 
 import re
 
