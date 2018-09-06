@@ -96,6 +96,10 @@ shell which will execute arbitrary user environment configuration
 access to their own cluster user account.  This is something which we
 are working on.
 
+The `admin_environment` option claims to pass environment only to the
+batch spawners, and not the user servers.  This relies on each spawner
+handling environment correctly, and this is *not* checked so you
+should *not* rely on this yet.
 
 ## Provide different configurations of BatchSpawner
 
@@ -162,6 +166,7 @@ Added (user)
 * Add new option exec_prefix, which defaults to `sudo -E -u {username}`.  This replaces explicit `sudo` in every batch command - changes in local commands may be needed.
 * Add `req_prologue` and `req_epilogue` options to scripts which are inserted before/after the main jupyterhub-singleuser command, which allow for generic setup/cleanup without overriding the entire script.  #96
 * SlurmSpawner: add the `req_reservation` option.  #
+* Add the option `admin_environment` which get passed to the batch submission commands (like for authentication) but *not* to the `--export=keepvars` options.  This *should* mean that it is not passed to the user, but not every spawner is checked, so this should *not* be relied on.
 
 Added (developer)
 
