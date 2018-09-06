@@ -160,7 +160,6 @@ Added (user)
 
 * Add Jinja2 templating as an option for all scripts and commands.  If '{{' or `{%` is used anywhere in the string, it is used as a jinja2 template.
 * Add new option exec_prefix, which defaults to `sudo -E -u {username}`.  This replaces explicit `sudo` in every batch command - changes in local commands may be needed.
-* New option: `req_keepvars_extra`, which allows keeping extra variables in addition to what is defined by JupyterHub itself (addition of variables to keep instead of replacement).  #99
 * Add `req_prologue` and `req_epilogue` options to scripts which are inserted before/after the main jupyterhub-singleuser command, which allow for generic setup/cleanup without overriding the entire script.  #96
 * SlurmSpawner: add the `req_reservation` option.  #
 
@@ -172,6 +171,7 @@ Added (developer)
 Changed
 
 * Update minimum requirements to JupyterHub 0.8.1 and Python 3.4.
+* Change meaning of `req_keepvars`.  Previously, setting this would override everything that JupyterHub requires to be set (so you'd have to make sure you set it back).  Now, `req_keepvars` only *adds* to the JupyterHub defaults, and `req_keepvars_default` gets set to the JupyterHub upstream and can be used to completly override the JupyterHub defaults. #99, #??
 * Update Slurm batch script.  Now, the single-user notebook is run in a job step, with a wrapper of `srun`.  This may need to be removed using `req_srun=''` if you don't want environment variables limited.
 * Pass the environment dictionary to the queue and cancel commands as well.  This is mostly user environment, but may be useful to these commands as well in some cases. #108, #111  If these envioronment variables were used for authentication as an admin, be aware that there are pre-existing security issues because they may be passed to the user via the batch submit command, see #82.
 
