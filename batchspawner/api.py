@@ -9,6 +9,7 @@ class BatchSpawnerAPIHandler(APIHandler):
         user = self.get_current_user()
         data = self.get_json_body()
         port = int(data.get('port', 0))
+        ip = self.request.remote_ip
         user.spawner.current_port = port
         self.finish(json.dumps({"message": "BatchSpawner port configured"}))
         self.set_status(201)
